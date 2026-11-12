@@ -1,0 +1,19 @@
+{
+  "name": "Kartu Pasien - Irfan",
+  "short_name": "Kartu Pasien",
+  "description": "Kartu Pasien Online & Catatan Pengambilan Obat",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#9882c4",
+  "theme_color": "#8d75bd",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
