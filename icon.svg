@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9882c4" />
+      <stop offset="100%" stop-color="#5e468f" />
+    </linearGradient>
+  </defs>
+  <!-- Background Kartu Ungu -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <rect x="16" y="16" width="480" height="480" rx="98" fill="none" stroke="#2c1e4a" stroke-width="10" stroke-dasharray="18 12" opacity="0.45" />
+  
+  <!-- Kapsul Obat Miring 45 Derajat -->
+  <g transform="translate(256,256) rotate(-45) translate(-256,-256)">
+    <!-- Bayangan Kapsul -->
+    <rect x="112" y="192" width="296" height="140" rx="70" fill="#1e1336" opacity="0.3" />
+    
+    <!-- Separuh Kiri Kapsul (Putih) -->
+    <path d="M 180 186 L 256 186 L 256 326 L 180 326 A 70 70 0 0 1 180 186 Z" fill="#ffffff" />
+    
+    <!-- Separuh Kanan Kapsul (Ungu Gelap) -->
+    <path d="M 256 186 L 332 186 A 70 70 0 0 1 332 326 L 256 326 Z" fill="#4527a0" />
+    
+    <!-- Garis Tengah & Outline Tegas -->
+    <line x1="256" y1="186" x2="256" y2="326" stroke="#2c1e4a" stroke-width="10" />
+    <rect x="110" y="186" width="292" height="140" rx="70" fill="none" stroke="#2c1e4a" stroke-width="12" />
+    
+    <!-- Kilau Cahaya pada Kapsul -->
+    <rect x="145" y="208" width="85" height="18" rx="9" fill="#e8e2f4" opacity="0.9" />
+    <rect x="278" y="208" width="75" height="18" rx="9" fill="#b39ddb" opacity="0.55" />
+  </g>
+</svg>
