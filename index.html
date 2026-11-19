@@ -16,6 +16,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     html, body {
@@ -23,14 +24,15 @@
       height: 100%;
       overflow: hidden;
       background-color: #9882c4;
-      font-family: 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Layar transisi awal saat iframe Google Apps Script dimuat */
+    /* Layar transisi awal dengan animasi kapsul obat identik dengan Web App */
     #splash {
       position: fixed;
       inset: 0;
       background-color: #9882c4;
+      background-image: radial-gradient(rgba(255,255,255,0.14) 1px, transparent 0);
+      background-size: 16px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -39,23 +41,80 @@
       transition: opacity 0.35s ease;
     }
 
-    #splash img {
-      width: 84px;
-      height: 84px;
-      margin-bottom: 16px;
-      animation: pulse 1.2s infinite ease-in-out;
+    .pill-loader {
+      width: 68px;
+      height: 30px;
+      border-radius: 999px;
+      border: 3px solid #2c1e4a;
+      background: linear-gradient(90deg, #ffffff 50%, #7e57c2 50%);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 -3px 4px rgba(0,0,0,0.15);
+      position: relative;
+      animation: pillSpinBounce 1.1s infinite ease-in-out;
+      margin-bottom: 18px;
     }
 
-    #splash p {
-      color: #1e1336;
-      font-weight: 800;
+    .pill-loader::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 11px;
+      width: 18px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 4px;
+    }
+
+    @keyframes pillSpinBounce {
+      0%   { transform: translateY(0) rotate(0deg); }
+      40%  { transform: translateY(-14px) rotate(180deg); }
+      80%  { transform: translateY(0) rotate(360deg); }
+      100% { transform: translateY(0) rotate(360deg); }
+    }
+
+    .pill-text {
+      color: #ffffff;
       font-size: 14px;
-      letter-spacing: 0.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      background: #2c1e4a;
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
+    /* Banner izin notifikasi HP */
+    #notifBanner {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 400px;
+      background: #2c1e4a;
+      color: #fff;
+      border: 1.5px solid #d1c4e9;
+      border-radius: 10px;
+      padding: 12px 14px;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      font-size: 12.5px;
+    }
+
+    #notifBanner button {
+      background: #7e57c2;
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     iframe {
@@ -69,8 +128,13 @@
 <body>
 
   <div id="splash">
-    <img src="./icon.svg" alt="Ikon Kartu Pasien">
-    <p>Membuka Kartu Pasien...</p>
+    <div class="pill-loader"></div>
+    <div class="pill-text">Membuka Kartu Pasien...</div>
+  </div>
+
+  <div id="notifBanner">
+    <span>🔔 Aktifkan pengingat HP 1 jam sebelum jadwal obat?</span>
+    <button type="button" onclick="mintaIzinNotif()">Aktifkan</button>
   </div>
 
   <iframe 
@@ -81,21 +145,100 @@
   </iframe>
 
   <script>
+    let swRegistration = null;
+
     function hideSplash() {
       const splash = document.getElementById('splash');
       if (splash) {
         splash.style.opacity = '0';
         setTimeout(() => splash.style.display = 'none', 350);
       }
+      cekStatusIzinNotif();
     }
 
-    // Daftarkan Service Worker agar memenuhi syarat instalasi PWA Android
+    // Daftarkan Service Worker PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('PWA Service Worker aktif:', reg.scope))
-          .catch(err => console.error('PWA Service Worker gagal:', err));
+          .then(reg => {
+            swRegistration = reg;
+          })
+          .catch(err => console.error('SW gagal:', err));
       });
+    }
+
+    // Cek & minta izin notifikasi HP
+    function cekStatusIzinNotif() {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === 'default') {
+        document.getElementById('notifBanner').style.display = 'flex';
+      } else if (Notification.permission === 'granted') {
+        mulaiTimerPengingat();
+      }
+    }
+
+    function mintaIzinNotif() {
+      Notification.requestPermission().then(permission => {
+        document.getElementById('notifBanner').style.display = 'none';
+        if (permission === 'granted') {
+          kirimNotifHP(
+            "Pengingat Obat Aktif 💊",
+            "Notifikasi akan muncul otomatis 1 jam sebelum jadwal minum obat harian Anda."
+          );
+          mulaiTimerPengingat();
+        }
+      });
+    }
+
+    // Terima sinkronisasi jam jadwal dari iframe Google Apps Script
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'SYNC_JADWAL_OBAT') {
+        localStorage.setItem('jamJadwalObat', event.data.jamJadwal || '21:00');
+        localStorage.setItem('sudahMinumHariIni', event.data.sudahMinum ? '1' : '0');
+      }
+    });
+
+    function kirimNotifHP(judul, isi) {
+      if (Notification.permission !== 'granted') return;
+      const opsi = {
+        body: isi,
+        icon: './icon.svg',
+        badge: './icon.svg',
+        vibrate: [200, 100, 200],
+        tag: 'pengingat-obat-harian'
+      };
+      if (swRegistration && swRegistration.showNotification) {
+        swRegistration.showNotification(judul, opsi);
+      } else {
+        new Notification(judul, opsi);
+      }
+    }
+
+    // Pengecekan setiap 30 detik apakah sudah masuk 1 jam sebelum jam default
+    function mulaiTimerPengingat() {
+      setInterval(() => {
+        const jamJadwal = localStorage.getItem('jamJadwalObat') || '21:00';
+        const sudahMinum = localStorage.getItem('sudahMinumHariIni') === '1';
+        if (sudahMinum) return;
+
+        const [hTarget, mTarget] = jamJadwal.split(':').map(Number);
+        // Hitung waktu 1 jam sebelumnya
+        const hRemind = (hTarget - 1 + 24) % 24;
+        const mRemind = mTarget;
+
+        const now = new Date();
+        const tglKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}_${hRemind}:${mRemind}`;
+
+        if (now.getHours() === hRemind && now.getMinutes() === mRemind) {
+          if (localStorage.getItem('lastNotifSentKey') !== tglKey) {
+            localStorage.setItem('lastNotifSentKey', tglKey);
+            kirimNotifHP(
+              "⏰ 1 Jam Lagi Jadwal Minum Obat!",
+              `Persiapkan obat Anda. Jadwal minum obat harian pukul ${jamJadwal} WIB.`
+            );
+          }
+        }
+      }, 30000);
     }
   </script>
 
