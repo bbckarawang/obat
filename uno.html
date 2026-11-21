@@ -115,13 +115,14 @@
   }
 
   .loader-mascot {
-    font-size: 22px;
+    font-size: 20px;
     background: rgba(255,255,255,0.1);
     padding: 10px 22px;
     border-radius: 999px;
     border: 2px dashed rgba(255,255,255,0.3);
     animation: wobbleText 1.2s infinite ease-in-out;
     text-align: center;
+    max-width: 90vw;
   }
 
   @keyframes wobbleText {
@@ -218,8 +219,19 @@
   .btn-green { background: var(--green); }
   .btn-yellow { background: var(--yellow); color: #1b1b1b; }
   .btn-dark { background: #323854; }
+  .btn-purple { background: #8e44ad; }
 
   .row { display: flex; gap: 10px; }
+
+  .invite-banner {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.25), rgba(52, 199, 89, 0.2));
+    border: 2px solid rgba(255, 204, 0, 0.7);
+    border-radius: 16px;
+    padding: 12px 14px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.4;
+  }
 
   .room-code-box {
     background: #0d101b;
@@ -235,11 +247,31 @@
     font-weight: 700;
   }
 
+  .share-link-box {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(0,0,0,0.35);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.14);
+  }
+  .share-link-text {
+    flex: 1;
+    font-size: 12px;
+    color: #d6dcff;
+    padding-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: all;
+  }
+
   .player-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 200px;
+    max-height: 180px;
     overflow-y: auto;
   }
   .player-item {
@@ -249,6 +281,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    animation: popIn 0.25s ease;
   }
 
   /* ================= GAME BOARD ================= */
@@ -352,7 +385,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    gap: 12px;
+    gap: 10px;
   }
 
   .direction-ring {
@@ -456,6 +489,51 @@
     transform: scale(0.93);
   }
 
+  /* SINYAL KARTU DI KUBURAN / DEK MENYALA SAAT TIDAK ADA KARTU YANG BISA DIBUANG */
+  .graveyard-slot {
+    position: relative;
+    border-radius: 18px;
+    transition: transform 0.25s ease;
+  }
+  .graveyard-slot.must-draw-signal {
+    animation: graveyardSignalPulse 0.95s infinite alternate ease-in-out;
+  }
+  .graveyard-slot.must-draw-signal .uno-card {
+    border-color: #ffe600;
+    box-shadow: 0 0 24px #ffcc00, 0 0 46px rgba(255, 204, 0, 0.85);
+  }
+  .draw-hint-badge {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 62px);
+    background: linear-gradient(135deg, #ffcc00, #ff9500);
+    color: #111;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    z-index: 35;
+    pointer-events: none;
+    white-space: nowrap;
+    display: none;
+    animation: hintHop 0.7s infinite alternate ease-in-out;
+  }
+  .draw-hint-badge.show {
+    display: block;
+  }
+
+  @keyframes graveyardSignalPulse {
+    0% { transform: scale(1) rotate(-1.5deg); filter: brightness(1); }
+    100% { transform: scale(1.09) rotate(2deg); filter: brightness(1.22); }
+  }
+  @keyframes hintHop {
+    0% { transform: translate(-50%, 60px) scale(0.98); }
+    100% { transform: translate(-50%, 52px) scale(1.05); }
+  }
+
   .active-color-pill {
     padding: 5px 14px;
     border-radius: 999px;
@@ -467,28 +545,34 @@
     letter-spacing: 1px;
   }
 
-  /* Funny Action Bubble & Reactions */
-  .funny-toast {
+  /* ELEGAN TOAST NOTIFICATION */
+  .elegant-toast-wrap {
     position: fixed;
-    top: 22%;
+    top: 18%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    background: #fff;
-    color: #111;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 18px;
-    font-weight: 700;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-    border: 4px solid var(--yellow);
-    z-index: 200;
+    transform: translateX(-50%);
+    z-index: 250;
     pointer-events: none;
-    white-space: nowrap;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+    width: max-content;
+    max-width: 92vw;
+  }
+  .funny-toast {
+    background: rgba(20, 23, 38, 0.92);
+    backdrop-filter: blur(14px);
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 14px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255, 204, 0, 0.75);
+    text-align: center;
     opacity: 0;
+    transform: translateY(-14px) scale(0.94);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
   }
   .funny-toast.show {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 
@@ -615,16 +699,17 @@
     40%, 60% { transform: translate3d(7px, 0, 0); }
   }
 
-  /* Wild Color Picker Modal */
+  /* ELEGAN MODAL OVERLAY (WILD COLOR, CONFIRM, VICTORY) */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.75);
+    background: rgba(8, 10, 18, 0.78);
     display: none;
     align-items: center;
     justify-content: center;
+    padding: 20px;
     z-index: 600;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
   }
   .modal-overlay.active { display: flex; }
 
@@ -632,10 +717,11 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-    background: #1f2336;
+    background: rgba(31, 35, 54, 0.96);
     padding: 22px;
     border-radius: 26px;
-    border: 3px solid #fff;
+    border: 2px solid rgba(255,255,255,0.28);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.6);
   }
   .color-choice {
     width: 90px;
@@ -650,9 +736,49 @@
   }
   .color-choice:active { transform: scale(0.92); }
 
+  .elegant-dialog {
+    background: rgba(25, 29, 46, 0.96);
+    border: 1.5px solid rgba(255, 255, 255, 0.22);
+    border-radius: 26px;
+    padding: 24px 22px;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: 0 24px 54px rgba(0,0,0,0.65);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: popIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .dialog-icon {
+    font-size: 44px;
+    line-height: 1;
+    animation: bounceAvatar 1s infinite alternate;
+  }
+  .dialog-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--yellow);
+  }
+  .dialog-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.45;
+  }
+  .dialog-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .dialog-actions .btn {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
   @keyframes popIn {
-    0% { transform: scale(0); }
-    100% { transform: scale(1); }
+    0% { transform: scale(0.82); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
 </style>
 </head>
@@ -672,8 +798,10 @@
 <!-- LAYER ANIMASI KARTU TERBANG -->
 <div id="fxLayer"></div>
 
-<!-- BUBBLE KOMENTAR LUCU -->
-<div class="funny-toast" id="funnyToast"></div>
+<!-- ELEGAN TOAST NOTIFICATION -->
+<div class="elegant-toast-wrap">
+  <div class="funny-toast" id="funnyToast"></div>
+</div>
 
 <!-- LOBBY SCREEN -->
 <div id="lobbyScreen" class="screen active">
@@ -682,21 +810,38 @@
   </div>
 
   <div class="card-panel" id="setupPanel">
-    <input type="text" id="playerNameInput" placeholder="Masukkan Nama Kamu (misal: Budi)" maxlength="12">
-    <button class="btn btn-red" onclick="createRoom()">👑 Buat Room Baru (Host)</button>
-    <div style="text-align:center; opacity:0.6; font-size:13px;">— ATAU GABUNG TEMAN —</div>
-    <div class="row">
-      <input type="text" id="joinCodeInput" placeholder="KODE 5 HURUF" maxlength="5" style="text-transform:uppercase; text-align:center; font-weight:700; letter-spacing:3px;">
-      <button class="btn btn-blue" onclick="joinRoom()">Gabung</button>
+    <div class="invite-banner" id="inviteLinkBanner" style="display:none;">
+      🔗 Diundang ke Room <strong id="invitedCodeLabel" style="color:var(--yellow);">-----</strong>! Tulis namamu lalu langsung gabung.
     </div>
-    <div id="lobbyStatus" style="text-align:center; font-size:13px; color:#ffd60a;"></div>
+
+    <input type="text" id="playerNameInput" placeholder="Masukkan Nama Kamu (misal: Budi)" maxlength="12">
+
+    <div id="hostCreateSection">
+      <button class="btn btn-red" style="width:100%;" onclick="createRoom()">👑 Buat Room Baru (Host)</button>
+    </div>
+
+    <div id="manualJoinSection">
+      <div style="text-align:center; opacity:0.6; font-size:13px; margin-bottom:10px;">— ATAU GABUNG TEMAN —</div>
+      <div class="row">
+        <input type="text" id="joinCodeInput" placeholder="KODE 5 HURUF" maxlength="5" style="text-transform:uppercase; text-align:center; font-weight:700; letter-spacing:3px;">
+        <button class="btn btn-blue" id="joinBtn" onclick="joinRoom()">Gabung</button>
+      </div>
+    </div>
+
+    <div id="lobbyStatus" style="text-align:center; font-size:13px; color:#ffd60a; min-height:18px;"></div>
   </div>
 
   <div class="card-panel" id="roomPanel" style="display:none;">
     <div class="room-code-box">
-      <div style="font-size:12px; opacity:0.8;">BAGIKAN KODE ROOM KE HP TEMAN</div>
+      <div style="font-size:12px; opacity:0.8;">KODE ROOM</div>
       <span id="displayRoomCode">-----</span>
     </div>
+
+    <div class="share-link-box">
+      <div class="share-link-text" id="shareLinkText">-</div>
+      <button class="btn btn-purple" style="padding:9px 12px; font-size:12px; border-radius:11px;" onclick="copyShareLink()">🔗 Salin Link</button>
+    </div>
+    <button class="btn btn-blue" style="padding:10px 14px; font-size:13px;" onclick="nativeShareLink()">📤 Bagikan Link ke Chat</button>
 
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <strong id="playerCountLabel">Pemain (1/8)</strong>
@@ -718,7 +863,7 @@
       <span id="deckCountLabel">Dek: 108</span>
     </div>
     <button class="btn btn-yellow" id="catchUnoBtn" style="padding:6px 12px; font-size:12px; display:none;" onclick="catchLupaUno()">🚨 Tangkap Lupa UNO!</button>
-    <button class="btn btn-dark" style="padding:6px 10px; font-size:12px;" onclick="location.reload()">Keluar</button>
+    <button class="btn btn-dark" style="padding:6px 10px; font-size:12px;" onclick="confirmExitGame()">Keluar</button>
   </div>
 
   <!-- Kursi Lawan -->
@@ -729,11 +874,14 @@
     <div class="direction-ring" id="dirRing"></div>
     <div class="active-color-pill" id="activeColorPill">WARNA: MERAH</div>
     <div class="piles-wrap">
-      <div class="uno-card back" id="deckPile" onclick="onClickDrawDeck()">
-        <span class="card-val">UNO</span>
+      <div class="graveyard-slot" id="graveyardSlot">
+        <div class="uno-card back" id="deckPile" onclick="onClickDrawDeck()">
+          <span class="card-val">UNO</span>
+        </div>
       </div>
       <div id="discardPileSlot"></div>
     </div>
+    <div class="draw-hint-badge" id="drawHintBadge">✨ Tidak ada kartu cocok — Tap Dek untuk ambil!</div>
   </div>
 
   <!-- Reaksi Emoji Lucu -->
@@ -762,6 +910,16 @@
     <button class="color-choice" style="background:var(--blue);" onclick="selectWildColor('blue')">BIRU</button>
     <button class="color-choice" style="background:var(--green);" onclick="selectWildColor('green')">HIJAU</button>
     <button class="color-choice" style="background:var(--yellow); color:#111;" onclick="selectWildColor('yellow')">KUNING</button>
+  </div>
+</div>
+
+<!-- MODAL DIALOG ELEGAN (PENGGANTI ALERT & CONFIRM BAWAAN) -->
+<div class="modal-overlay" id="elegantDialogModal">
+  <div class="elegant-dialog">
+    <div class="dialog-icon" id="dialogIcon">🎉</div>
+    <div class="dialog-title" id="dialogTitle">Info</div>
+    <div class="dialog-desc" id="dialogDesc">Pesan</div>
+    <div class="dialog-actions" id="dialogActions"></div>
   </div>
 </div>
 
@@ -816,6 +974,30 @@ function playSound(type) {
   } catch (e) {}
 }
 
+/* ================= ELEGAN DIALOG HELPER ================= */
+function showElegantDialog({ icon = '✨', title = '', desc = '', buttons = [] }) {
+  const modal = document.getElementById('elegantDialogModal');
+  document.getElementById('dialogIcon').textContent = icon;
+  document.getElementById('dialogTitle').textContent = title;
+  document.getElementById('dialogDesc').textContent = desc;
+
+  const actionsEl = document.getElementById('dialogActions');
+  actionsEl.innerHTML = '';
+
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = `btn ${b.cls || 'btn-blue'}`;
+    btn.textContent = b.text;
+    btn.onclick = () => {
+      modal.classList.remove('active');
+      if (typeof b.onClick === 'function') b.onClick();
+    };
+    actionsEl.appendChild(btn);
+  });
+
+  modal.classList.add('active');
+}
+
 /* ================= LOADING SCREEN LUCU ================= */
 const funnyTips = [
   "Mengocok 108 kartu penuh drama...",
@@ -832,11 +1014,79 @@ const tipTimer = setInterval(() => {
 }, 900);
 
 window.addEventListener('load', () => {
+  initInviteFromUrl();
   setTimeout(() => {
     clearInterval(tipTimer);
     document.getElementById('loadingScreen').classList.add('hidden');
-  }, 2100);
+  }, 1900);
 });
+
+/* ================= SHARELINK HELPER ================= */
+let activeRoomCode = "";
+let isInvitedViaLink = false;
+
+function buildShareUrl(code) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('room', code);
+  return url.toString();
+}
+
+function initInviteFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const roomParam = (params.get('room') || '').trim().toUpperCase().slice(0, 5);
+  if (roomParam.length >= 4) {
+    isInvitedViaLink = true;
+    document.getElementById('joinCodeInput').value = roomParam;
+    document.getElementById('invitedCodeLabel').textContent = roomParam;
+    document.getElementById('inviteLinkBanner').style.display = 'block';
+    document.getElementById('hostCreateSection').style.display = 'none';
+    document.getElementById('joinBtn').textContent = 'Gabung Room';
+  }
+}
+
+function updateRoomShareUI(code) {
+  activeRoomCode = code;
+  document.getElementById('displayRoomCode').textContent = code;
+  document.getElementById('shareLinkText').textContent = buildShareUrl(code);
+}
+
+function copyShareLink() {
+  if (!activeRoomCode) return;
+  const link = buildShareUrl(activeRoomCode);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(() => {
+      showFunnyToast("🔗 Link undangan tersalin! Tinggal paste di chat");
+    }).catch(() => fallbackCopy(link));
+  } else {
+    fallbackCopy(link);
+  }
+}
+
+function fallbackCopy(text) {
+  const temp = document.createElement('textarea');
+  temp.value = text;
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand('copy');
+  temp.remove();
+  showFunnyToast("🔗 Link undangan tersalin!");
+}
+
+async function nativeShareLink() {
+  if (!activeRoomCode) return;
+  const link = buildShareUrl(activeRoomCode);
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Main UNO P2P Bareng!',
+        text: `Yuk main UNO! Klik link ini, tulis namamu, lalu langsung gabung (Kode: ${activeRoomCode})`,
+        url: link
+      });
+    } catch (e) {}
+  } else {
+    copyShareLink();
+  }
+}
 
 /* ================= PEERJS & STATE MULTIPLAYER ================= */
 const PEER_PREFIX = "UNOP2P2026-";
@@ -846,18 +1096,18 @@ let isHost = false;
 let myId = "";
 let myName = "";
 let hostConn = null;
-let clientConns = {}; // id -> DataConnection
-let isAnimatingLock = false; // Mengunci klik saat animasi pembagian/buang kartu berjalan
+let clientConns = {};
+let isAnimatingLock = false;
+let lastWinnerShown = null;
 
-// State Game Utama (Dikelola oleh Host, disinkronkan ke semua klien)
 let gameState = {
   started: false,
-  players: [], // { id, name, avatar, isBot, hand: [], saidUno: false }
+  players: [],
   deck: [],
   discardPile: [],
   currentColor: "red",
   turnIndex: 0,
-  direction: 1, // 1 clockwise, -1 counter-clockwise
+  direction: 1,
   winner: null
 };
 
@@ -875,14 +1125,14 @@ function showFunnyToast(msg) {
   toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('show'), 2300);
+  toast._t = setTimeout(() => toast.classList.remove('show'), 2400);
 }
 
 /* ================= LOBBY LOGIC ================= */
 function createRoom() {
   myName = document.getElementById('playerNameInput').value.trim() || "Host Kece";
   const code = generateRoomCode();
-  document.getElementById('lobbyStatus').textContent = "Membuat room P2P...";
+  document.getElementById('lobbyStatus').textContent = "Menyiapkan room P2P & link undangan...";
 
   peer = new Peer(PEER_PREFIX + code, {
     config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
@@ -900,9 +1150,10 @@ function createRoom() {
       saidUno: false
     }];
 
+    document.getElementById('lobbyStatus').textContent = "";
     document.getElementById('setupPanel').style.display = 'none';
     document.getElementById('roomPanel').style.display = 'flex';
-    document.getElementById('displayRoomCode').textContent = code;
+    updateRoomShareUI(code);
     document.getElementById('startGameBtn').style.display = 'flex';
     renderLobbyPlayers();
   });
@@ -923,10 +1174,16 @@ function createRoom() {
 }
 
 function joinRoom() {
-  myName = document.getElementById('playerNameInput').value.trim() || "Pemain Tamu";
+  const nameInput = document.getElementById('playerNameInput').value.trim();
+  if (isInvitedViaLink && !nameInput) {
+    showFunnyToast("✍️ Ketik nama kamu dulu biar temanmu kenal!");
+    document.getElementById('playerNameInput').focus();
+    return;
+  }
+  myName = nameInput || "Pemain Tamu";
   const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
   if (code.length < 4) {
-    document.getElementById('lobbyStatus').textContent = "Masukkan 5 kode room yang valid!";
+    document.getElementById('lobbyStatus').textContent = "Masukkan kode room yang valid!";
     return;
   }
 
@@ -941,22 +1198,47 @@ function joinRoom() {
 
     hostConn.on('open', () => {
       hostConn.send({ type: 'JOIN', name: myName });
+      document.getElementById('lobbyStatus').textContent = "";
       document.getElementById('setupPanel').style.display = 'none';
       document.getElementById('roomPanel').style.display = 'flex';
-      document.getElementById('displayRoomCode').textContent = code;
+      updateRoomShareUI(code);
       document.getElementById('addBotBtn').style.display = 'none';
       document.getElementById('waitingHostText').style.display = 'block';
+      renderLobbyPlayers();
     });
 
     hostConn.on('data', (data) => handleClientReceive(data));
     hostConn.on('close', () => {
-      alert("Koneksi ke Host terputus!");
-      location.reload();
+      showElegantDialog({
+        icon: '🔌',
+        title: 'Koneksi Terputus',
+        desc: 'Koneksi ke HP Host terputus atau room sudah ditutup.',
+        buttons: [{ text: 'Kembali ke Awal', cls: 'btn-blue', onClick: () => goToFreshLobby() }]
+      });
     });
   });
 
   peer.on('error', () => {
-    document.getElementById('lobbyStatus').textContent = "Room tidak ditemukan! Cek kode lagi.";
+    document.getElementById('lobbyStatus').textContent = "Room tidak ditemukan! Pastikan Host sudah membuka room.";
+  });
+}
+
+function goToFreshLobby() {
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.searchParams.delete('room');
+  window.history.replaceState({}, '', cleanUrl.toString());
+  window.location.reload();
+}
+
+function confirmExitGame() {
+  showElegantDialog({
+    icon: '🚪',
+    title: 'Keluar Permainan?',
+    desc: 'Kamu akan keluar dari meja UNO saat ini.',
+    buttons: [
+      { text: 'Batal', cls: 'btn-dark' },
+      { text: 'Keluar', cls: 'btn-red', onClick: () => goToFreshLobby() }
+    ]
   });
 }
 
@@ -1043,6 +1325,7 @@ function startGame() {
     return;
   }
 
+  lastWinnerShown = null;
   gameState.deck = buildDeck();
   gameState.started = true;
   gameState.winner = null;
@@ -1054,7 +1337,6 @@ function startGame() {
     p.saidUno = false;
   });
 
-  // Kartu pertama di meja tidak boleh Wild +4
   let firstCard = drawFromDeck(1)[0];
   while (firstCard.color === 'wild') {
     gameState.deck.unshift(firstCard);
@@ -1067,13 +1349,12 @@ function startGame() {
   runDealingSequence(gameState);
 }
 
-/* Animasi pembagian kartu bertahap selama ~2.6 detik seolah membagikan kartu fisik satu per satu */
 async function runDealingSequence(targetState) {
   isAnimatingLock = true;
+  document.getElementById('elegantDialogModal').classList.remove('active');
   document.getElementById('lobbyScreen').classList.remove('active');
   document.getElementById('gameScreen').classList.add('active');
 
-  // Render kondisi meja kosong dulu sebelum kartu dibagikan
   const tempState = JSON.parse(JSON.stringify(targetState));
   tempState.players.forEach(p => p.hand = []);
   renderGame(tempState, true);
@@ -1098,13 +1379,12 @@ async function runDealingSequence(targetState) {
         480
       );
 
-      // Tambahkan kartu ke tangan sementara setelah sedikit jeda
       setTimeout(() => {
         tempState.players[pIdx].hand.push(realCard);
         renderGame(tempState, true);
       }, 320);
 
-      await sleep(95); // Ritme membagikan kartu satu per satu
+      await sleep(95);
     }
   }
 
@@ -1161,8 +1441,6 @@ function spawnFlyingCard(fromRect, toPos, cardData = null, durationMs = 680) {
   el.style.transform = 'scale(0.85) rotate(-18deg)';
 
   fxLayer.appendChild(el);
-
-  // Force reflow agar transisi CSS berjalan mulus
   void el.offsetWidth;
 
   const randomTilt = Math.floor(Math.random() * 26) - 13;
@@ -1176,13 +1454,17 @@ function spawnFlyingCard(fromRect, toPos, cardData = null, durationMs = 680) {
 }
 
 /* ================= AKSI BERMAIN & ANIMASI BUANG KARTU ================= */
-function isCardPlayable(card) {
-  const topCard = gameState.discardPile[gameState.discardPile.length - 1];
+function isCardPlayable(card, stateRef = gameState) {
+  const topCard = stateRef.discardPile[stateRef.discardPile.length - 1];
   if (!topCard) return true;
   if (card.color === 'wild') return true;
-  if (card.color === gameState.currentColor) return true;
+  if (card.color === stateRef.currentColor) return true;
   if (card.value === topCard.value) return true;
   return false;
+}
+
+function hasAnyPlayableCard(hand, stateRef = gameState) {
+  return hand.some(card => isCardPlayable(card, stateRef));
 }
 
 function onClickCard(index) {
@@ -1359,7 +1641,6 @@ function processGameAction(action) {
       currentPlayer.saidUno = false;
     }
 
-    // Cek Menang
     if (currentPlayer.hand.length === 0) {
       gameState.winner = currentPlayer.name;
       broadcastState({
@@ -1438,7 +1719,6 @@ function checkBotTurn() {
   const current = gameState.players[gameState.turnIndex];
   if (!current || !current.isBot) return;
 
-  // Beri jeda 1.6 detik agar animasi buang kartu sebelumnya selesai & terasa natural
   setTimeout(() => {
     if (gameState.winner) return;
     const bot = gameState.players[gameState.turnIndex];
@@ -1487,7 +1767,6 @@ async function applyStateWithAnimation(newState, animEvent) {
     document.body.classList.add('shake-screen');
   }
 
-  // Animasi Buang Kartu selama ~0.85 detik dari posisi pemain ke tengah meja
   if (animEvent.kind === 'DISCARD_ANIM') {
     isAnimatingLock = true;
     const fromPos = getPlayerScreenTarget(animEvent.playerId);
@@ -1504,7 +1783,6 @@ async function applyStateWithAnimation(newState, animEvent) {
     isAnimatingLock = false;
   }
 
-  // Animasi Tarik Kartu dari dek ke pemain
   if (animEvent.kind === 'DRAW_ANIM') {
     isAnimatingLock = true;
     const deckRect = document.getElementById('deckPile').getBoundingClientRect();
@@ -1541,20 +1819,17 @@ function translateColor(c) {
 }
 
 function renderGame(state, skipWinnerAlert = false) {
-  // Top info
   document.getElementById('deckCountLabel').textContent = `Dek: ${state.deck.length}`;
   document.getElementById('dirIcon').textContent = state.direction === 1 ? '➡️' : '⬅️';
   const ring = document.getElementById('dirRing');
   ring.classList.toggle('reverse', state.direction === -1);
 
-  // Active Color Pill
   const colorPill = document.getElementById('activeColorPill');
   const colorMap = { red: '#ff3b30', blue: '#007aff', green: '#34c759', yellow: '#ffcc00' };
   colorPill.style.background = colorMap[state.currentColor] || '#333';
   colorPill.style.color = state.currentColor === 'yellow' ? '#111' : '#fff';
   colorPill.textContent = `WARNA: ${translateColor(state.currentColor)}`;
 
-  // Discard Pile
   const topCard = state.discardPile[state.discardPile.length - 1];
   const discardSlot = document.getElementById('discardPileSlot');
   if (topCard) {
@@ -1567,7 +1842,6 @@ function renderGame(state, skipWinnerAlert = false) {
     `;
   }
 
-  // Opponents
   const activePlayer = state.players[state.turnIndex];
   const oppRow = document.getElementById('opponentsRow');
   oppRow.innerHTML = state.players
@@ -1584,11 +1858,9 @@ function renderGame(state, skipWinnerAlert = false) {
       `;
     }).join('');
 
-  // Tombol Tangkap Lupa UNO
   const lupaUnoTarget = state.players.find(p => p.id !== myId && p.hand.length === 1 && !p.saidUno);
   document.getElementById('catchUnoBtn').style.display = lupaUnoTarget ? 'flex' : 'none';
 
-  // Turn Banner
   const banner = document.getElementById('turnBanner');
   if (state.winner) {
     banner.textContent = `🏆 Pemenang: ${state.winner}!`;
@@ -1601,13 +1873,20 @@ function renderGame(state, skipWinnerAlert = false) {
     banner.classList.remove('my-turn');
   }
 
-  // Kartu di Tangan Sendiri
   const me = state.players.find(p => p.id === myId);
   const handContainer = document.getElementById('myHandContainer');
+  const graveyardSlot = document.getElementById('graveyardSlot');
+  const drawHintBadge = document.getElementById('drawHintBadge');
+
+  let shouldSignalDraw = false;
+
   if (me) {
-    const isMyTurn = activePlayer && activePlayer.id === myId && !isAnimatingLock;
+    const isMyTurn = activePlayer && activePlayer.id === myId && !isAnimatingLock && !state.winner;
+    const canPlayAny = isMyTurn && hasAnyPlayableCard(me.hand, state);
+    shouldSignalDraw = isMyTurn && !canPlayAny;
+
     handContainer.innerHTML = me.hand.map((c, idx) => {
-      const playable = isMyTurn && isCardPlayable(c);
+      const playable = isMyTurn && isCardPlayable(c, state);
       const cls = isMyTurn ? (playable ? 'playable' : 'unplayable') : '';
       return `
         <div class="uno-card ${c.color} ${cls}" onclick="onClickCard(${idx})">
@@ -1619,12 +1898,27 @@ function renderGame(state, skipWinnerAlert = false) {
     }).join('');
   }
 
-  if (state.winner && !skipWinnerAlert) {
+  graveyardSlot.classList.toggle('must-draw-signal', shouldSignalDraw);
+  drawHintBadge.classList.toggle('show', shouldSignalDraw);
+
+  if (state.winner && !skipWinnerAlert && lastWinnerShown !== state.winner) {
+    lastWinnerShown = state.winner;
     setTimeout(() => {
-      if (confirm(`🎉 ${state.winner} MENANG!\nMain lagi sekarang?`)) {
-        if (isHost) startGame();
-        else location.reload();
-      }
+      showElegantDialog({
+        icon: '🏆',
+        title: `${state.winner} Menang!`,
+        desc: isHost
+          ? 'Ronde selesai! Mau bagikan kartu untuk ronde berikutnya?'
+          : 'Ronde selesai! Menunggu Host memulai ronde baru atau kembali ke lobby.',
+        buttons: isHost
+          ? [
+              { text: 'Lobby', cls: 'btn-dark', onClick: () => goToFreshLobby() },
+              { text: 'Main Lagi', cls: 'btn-green', onClick: () => startGame() }
+            ]
+          : [
+              { text: 'Lobby', cls: 'btn-blue', onClick: () => goToFreshLobby() }
+            ]
+      });
     }, 900);
   }
 }
